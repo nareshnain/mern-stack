@@ -2,8 +2,23 @@ var mongoose = require('mongoose');
 var schema = new mongoose.Schema({
     email: {
         type: String,
+        required: [true, 'Email address is required.'],
+        lowercase: true, // Automatically converts email to lowercase
+        trim: true,      // Removes leading/trailing whitespace
+        unique: true,    // Ensures uniqueness (this is an index helper, not a validator)
+        match: [
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/,
+        'Please enter a valid email address.'
+        ]
+    },
+    username: {
+        type: String,
         required: true,
         unique: true
+    },
+    password: {
+        type: String,
+        required: true
     },
     firstName: {
         type: String,

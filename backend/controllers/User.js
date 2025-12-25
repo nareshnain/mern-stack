@@ -1,12 +1,28 @@
 const UserModel = require('../model/user')
+const bcrypt = require('bcryptjs');
+const { sendEmail } = require('../utils/transporter');
+const { generateSecurePassword } =  require('../utils/common');
+const jwt = require("jsonwebtoken");
+
 // Create and Save a new user
 exports.create = async (req, res) => {
     if (!req.body.email && !req.body.firstName && !req.body.lastName && !req.body.phone) {
         res.status(400).send({ message: "Content can not be empty!" });
     }
-    
+
+    // const generatedPassword = generateSecurePassword();
+    const generatedPassword = 'Temp@12345';
+    // Hash the password before saving to the database
+    const hashedPassword = await bcrypt.hash(generatedPassword, 15);
+
+    // *************
+    // In a real application, you would save the username and **hashedPassword**
+    // to your database here.
+    // *************
     const user = new UserModel({
         email: req.body.email,
+        username: req.body.username,
+        password: hashedPassword,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         phone: req.body.phone,
@@ -15,7 +31,9 @@ exports.create = async (req, res) => {
         status: req.body.status
     });
     
-    await user.save().then(data => {
+    await user.save().then(async data => {
+        // Send the plaintext generated password to the user via email
+        await sendEmail(req.body.email, req.body.firstName, req.body.username, generatedPassword);
         res.send({
             message:"User created successfully!!",
             user:data
@@ -70,7 +88,7 @@ exports.update = async (req, res) => {
 };
 // Delete a user with the specified id in the request
 exports.destroy = async (req, res) => {
-    await UserModel.findByIdAndRemove(req.params.id).then(data => {
+    await UserModel.findByIdAndDelete(req.params.id).then(data => {
         if (!data) {
           res.status(404).send({
             message: `User not found.`
@@ -86,3 +104,24 @@ exports.destroy = async (req, res) => {
         });
     });
 };
+
+// Authenticate user
+exports.login = async (req, res) => {
+    const { username, password } = req.body;
+    const user = await UserModel.findOne({ username: username });
+    if (!user) {
+        return res.status(401).json({ message: 'Authentication failed. User not found.' });
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+        return res.status(401).json({ message: 'Authentication failed. Wrong password.' });
+    }
+    // Generate JWT token
+    const token = jwt.sign(
+        { userId: user._id, username: user.username, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+    );
+    res.json({ message: 'Authentication successful', token: token, userRole: user.role, fullName: user.firstName + ' ' + user.lastName, id: user._id});
+};
+// @desc Update a user

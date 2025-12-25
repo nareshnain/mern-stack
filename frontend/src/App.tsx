@@ -3,8 +3,8 @@ import './App.css'
 import { Sidebar } from './component/common/sidebar';
 import { UserList } from './component/user/UserList';
 import { AddNewUser } from './component/user/AddNewUser';
+
 function App() {
-  console.log('App rendered')
   return (
     <>
       <BrowserRouter>

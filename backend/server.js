@@ -1,12 +1,16 @@
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const dbConfig = require('./config/database.config.js');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const PORT = 3000;
 
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cors()); // This allows all origins (Access-Control-Allow-Origin: *)
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 mongoose.Promise = global.Promise;
@@ -21,6 +25,7 @@ mongoose.connect(dbConfig.url, {
 
 const UserRoute = require('./routes/User');
 app.use('/user', UserRoute);
+app.use('/login', require('./routes/Auth'));
 
 const SampleRoute = require('./routes/Sample');
 app.use('/sample', SampleRoute);
@@ -37,3 +42,4 @@ app.listen(PORT, () => {
     console.log("Server is listening on port 3000");
     console.log(`Swagger docs available at http://localhost:${PORT}/api-docs`);
 });
+
