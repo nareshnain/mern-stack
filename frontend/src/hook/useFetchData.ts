@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '../constant/default_data';
 
-export const useFetchData = (url) => {
+export const useFetchData = (url: string) => {
   const [data, setData] = useState(null);
   const [loader, setLoader] = useState(true);
   const [error, setError] = useState(null);
