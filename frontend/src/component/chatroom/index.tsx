@@ -15,7 +15,7 @@ const ChatRoom = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await fetch(API_URL + "/messages");
+        const res = await fetch(API_URL + "messages");
         const data = await res.json();
         setMessages(data);
       } catch (err) {
