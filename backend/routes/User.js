@@ -2,7 +2,7 @@ const UserModel = require('../model/user');
 
 // routes/User.js
 const express = require('express');
-const UserController = require('../controllers/user');
+const UserController = require('../controllers/User');
 const router = express.Router();
 const authenticateToken = require('../middleware/authenticate'); // Path to your middleware file
 
