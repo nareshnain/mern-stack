@@ -12,7 +12,7 @@ export const useFetchData = (url: string) => {
             const response = await fetch(`${API_URL}${url}`);
             const data = await response.json();
             setData(data);
-        } catch (err) {
+        } catch (err: any) {
             setError(err);
         } finally {
             setLoader(false);

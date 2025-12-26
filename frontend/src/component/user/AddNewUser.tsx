@@ -9,7 +9,7 @@ export const AddNewUser = () => {
     handleSubmit,
   } = useForm();
   
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data: any) => console.log(data);
   
   const backToUserList = () => {
     navigate("/users");

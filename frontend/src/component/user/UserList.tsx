@@ -2,7 +2,7 @@ import { useUserList } from "../../service/user";
 import { changeDateFormat } from "../../utils/dateFormat";
 
 export const UserList = () => {
-  const { data, loader, error } = useUserList();
+  const { data, loader, error }: any = useUserList();
   console.log("User List Data:", data);
   
   if (loader) {
@@ -37,7 +37,7 @@ export const UserList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data && data.map((user) => (
+                    {data && data?.map((user: any) => (
                     <tr>
                         <td className="px-4 py-2 border">{user.firstName}</td>
                         <td className="px-4 py-2 border">{user.lastName}</td>
