@@ -1,0 +1,96 @@
+// ChatRoom.jsx
+import { useState, useEffect, useRef } from "react";
+import { io } from "socket.io-client";
+import ImageUpload from "./ImageUpload";
+import { IMAGE_URL } from "../../constant/default_data";
+
+
+const ChatRoom = () => {
+  const [messages, setMessages] = useState<any>([]);
+  const [user, setUser] = useState("");
+  const [message, setMessage] = useState("");
+  const [imageUrl, setImageUrl] = useState(null);
+  const socketRef: any = useRef(null);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/messages");
+        const data = await res.json();
+        setMessages(data);
+      } catch (err) {
+        console.error("Error fetching messages:", err);
+      }
+    };
+    fetchMessages();
+
+    socketRef.current = io("http://localhost:3000");
+
+    socketRef.current.on("connect", () => {
+      console.log("Connected to socket server:", socketRef.current.id);
+    });
+
+    socketRef.current.on("message", (newMessage: any) => {
+      setMessages((prev: any) => [...prev, newMessage]);
+    });
+
+    socketRef.current.on("disconnect", (reason: any) => {
+      console.log("Socket disconnected:", reason);
+    });
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.off("message");
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, []);
+
+  const sendMessage = () => {
+    if (!user || !message) return;
+    const payload = { user, message, imageUrl };
+    // send via socket
+    if (socketRef.current && socketRef.current.connected) {
+      socketRef.current.emit("sendMessage", payload);
+    } else {
+      console.warn("Socket not connected. Falling back to POST (optional).");
+    }
+    setMessage("");
+  };
+
+  console.log("Rendering ChatRoom with messages:", socketRef.current);
+
+  return (
+    <div>
+      <h2>Chat Room</h2>
+      <ul>
+        {messages.map((msg: any) => (
+          <li key={msg._id}>
+            <strong>{msg.user}:</strong> {msg.message} {msg?.imageUrl && <img src={`${IMAGE_URL}${msg?.imageUrl}`} alt="attachment" style={{ maxWidth: '100px' }} />}
+          </li>
+        ))}
+      </ul>
+      <div>
+        <ImageUpload onImageSend={(imageUrl: any) => {
+          setImageUrl(imageUrl);
+        }} />
+        <input
+          type="text"
+          placeholder="Your name"
+          value={user}
+          onChange={(e) => setUser(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Type your message..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+        <button onClick={sendMessage}>Send</button>
+      </div>
+    </div>
+  );
+};
+
+export default ChatRoom;
