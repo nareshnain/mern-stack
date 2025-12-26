@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import ImageUpload from "./ImageUpload";
-import { IMAGE_URL } from "../../constant/default_data";
+import { API_URL, BACKEND_URL, IMAGE_URL } from "../../constant/default_data";
 
 
 const ChatRoom = () => {
@@ -15,7 +15,7 @@ const ChatRoom = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await fetch("http://localhost:3000/messages");
+        const res = await fetch(API_URL + "/messages");
         const data = await res.json();
         setMessages(data);
       } catch (err) {
@@ -24,7 +24,7 @@ const ChatRoom = () => {
     };
     fetchMessages();
 
-    socketRef.current = io("http://localhost:3000");
+    socketRef.current = io(BACKEND_URL);
 
     socketRef.current.on("connect", () => {
       console.log("Connected to socket server:", socketRef.current.id);
