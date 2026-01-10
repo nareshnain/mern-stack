@@ -72,8 +72,8 @@ io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
   socket.on("sendMessage", async (data) => {
     try {
-      const { user, message, imageUrl } = data;
-      const chatMessage = new ChatMessage({ user, message, imageUrl });
+      const { user, message, imageUrl, fileUrl, fileType } = data;
+      const chatMessage = new ChatMessage({ user, message, imageUrl, fileUrl, fileType });
       await chatMessage.save();
       // Emit to everyone (including sender)
       io.emit("message", chatMessage);

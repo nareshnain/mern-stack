@@ -28,3 +28,24 @@ exports.uploadImage = ((req, res) => {
     res.status(200).json({ imageUrl: imageUrl, message: 'File uploaded successfully' });
 });
 
+const audioVideoStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './audio-video'); // Store files in the 'audio-video' directory
+    },
+    filename: function (req, file, cb) {
+        cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname);
+    }
+});
+
+exports.uploadAudioVideoFile = multer({ storage: audioVideoStorage });
+
+// POST route to handle file upload
+exports.uploadAudioVideo = ((req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+    // In a real app, you would upload this file to Cloudinary/S3 and get a URL, 
+    // then save that URL to MongoDB as part of a new chat message.
+    const fileUrl = `/audio-video/${req.file.filename}`;
+    res.status(200).json({ fileUrl: fileUrl, message: 'File uploaded successfully' });
+});

@@ -18,7 +18,7 @@ const authenticateToken = require('../middleware/authenticate'); // Path to your
  *       200:
  *         description: A successful response
  */
-router.get('/', authenticateToken, UserController.findAll);
+router.get('/', UserController.findAll);
 
 /**
  * @swagger

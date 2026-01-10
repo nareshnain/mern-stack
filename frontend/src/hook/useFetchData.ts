@@ -13,6 +13,7 @@ export const useFetchData = (url: string) => {
             const data = await response.json();
             setData(data);
         } catch (err: any) {
+            console.error("Fetch Data Error:", err);
             setError(err);
         } finally {
             setLoader(false);

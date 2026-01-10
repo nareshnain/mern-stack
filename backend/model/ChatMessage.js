@@ -4,6 +4,8 @@ const chatMessageSchema = new mongoose.Schema({
 	user: { type: String, required: true },
 	message: { type: String, required: true },
 	imageUrl: { type: String },
+	fileType: { type: String },
+	fileUrl: { type: String },
 	timestamp: { type: Date, default: Date.now },
 });
 
