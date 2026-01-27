@@ -57,7 +57,18 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
     try {
         const user = await UserModel.findById(req.params.id);
-        res.status(200).json(user);
+        const resObject = {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            username: user.username,
+            phone: user.phone,
+            role: user.role,
+            address: user?.address,
+            status: user.status
+        };
+        res.status(200).json(resObject);
     } catch(error) {
         res.status(404).json({ message: error.message});
     }
@@ -78,7 +89,11 @@ exports.update = async (req, res) => {
                 message: `User not found.`
             });
         }else{
-            res.send({ message: "User updated successfully." })
+            res.send(
+                { 
+                    message: "User updated successfully.",
+                    user: data
+                })
         }
     }).catch(err => {
         res.status(500).send({

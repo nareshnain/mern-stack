@@ -38,7 +38,7 @@ router.get('/', UserController.findAll);
  *       200:
  *         description: A successful response
  */
-router.get('/:id', authenticateToken, UserController.findOne);
+router.get('/:id', UserController.findOne);
 
 /**
  * @swagger
@@ -88,7 +88,7 @@ router.post('/', UserController.create);
  *    200:
  *      description: A successful response
  */
-router.patch('/:id', authenticateToken, UserController.update);
+router.patch('/:id', UserController.update);
 
 /**
  * @swagger
@@ -108,6 +108,6 @@ router.patch('/:id', authenticateToken, UserController.update);
  *    200:
  *      description: A successful response
  */
-router.delete('/:id', authenticateToken, UserController.destroy);
+router.delete('/:id', UserController.destroy);
 
 module.exports = router;

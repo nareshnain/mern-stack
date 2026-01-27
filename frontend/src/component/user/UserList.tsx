@@ -1,16 +1,34 @@
 
 import { Suspense, use, useEffect, useState } from "react";
 import { changeDateFormat } from "../../utils/dateFormat";
-import { fetchUserList } from "../../service/user";
+import { deleteUserById, fetchUserList } from "../../service/user";
 
 export const UserList = () => {
   // const data = use(fetchUserList()); // comment due to error
   const [data, setData] = useState<any[]>([]);
 
+  const fetchUserData = async () => {
+    const response = await fetchUserList();
+    if (response && !response.error) {
+        setData(response);
+    }
+  };
+
   useEffect(() => {
-    console.log("User List Data:", data);
-    fetchUserList().then((res) => setData(res));
+    fetchUserData();
   }, []);
+
+  const updateUser = (userId: string) => {
+    window.location.href = `/add-user?userId=${userId}`;
+  };
+
+  const deleteUser = async(userId: string) => {
+    const confirmed = confirm('Are you sure you want to delete this user?');
+    if (confirmed) {
+      await deleteUserById(userId);
+      fetchUserData();
+    }
+  };
   
   return (
     <div className="flex flex-col mt-4 w-full">
@@ -48,8 +66,12 @@ export const UserList = () => {
                             <td className="px-4 py-2 border">{changeDateFormat(user.createdAt)}</td>
                             <td className="px-4 py-2 border">{changeDateFormat(user.updatedAt)}</td>
                             <td className="px-4 py-2 border">
-                                <button className="bg-blue-500 text-white px-2 py-1 rounded-base mr-2">Edit</button>
-                                <button className="bg-red-500 text-white px-2 py-1 rounded-base">Delete</button>
+                                <button className="bg-blue-500 text-white px-2 py-1 rounded-base mr-2" onClick={() => {
+                                    updateUser(user._id);
+                                }}>Edit</button>
+                                <button className="bg-red-500 text-white px-2 py-1 rounded-base" onClick={() => {
+                                    deleteUser(user._id);
+                                }}>Delete</button>
                             </td>
                         </tr>
                         ))}
